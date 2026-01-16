@@ -1,0 +1,92 @@
+{
+	"pages": [
+		{
+			"path": "pages/checkout/checkout",
+			"style": {
+				"navigationBarTitleText": "购物车"
+			}
+		},
+		{
+			"path": "pages/member/member",
+			"style": {
+				"navigationBarTitleText": "会员"
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/category/category",
+			"style": {
+				"navigationBarTitleText": "分类"
+			}
+		},
+		
+		
+		{
+			"path": "pages/product/product",
+			"style": {
+				"navigationBarTitleText": "商品详情"
+			}
+		},
+		{
+			"path": "pages/order/order",
+			"style": {
+				"navigationBarTitleText": "订单"
+			}
+		},
+		{
+			"path": "pages/order/detail",
+			"style": {
+				"navigationBarTitleText": "订单详情"
+			}
+		},
+		{
+			"path": "pages/favorites/favorites",
+			"style": {
+				"navigationBarTitleText": "收藏"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "韩韩面包",
+		"navigationBarBackgroundColor": "#FFF8DC",
+		"backgroundColor": "#FFF8DC"
+	},
+	"tabBar": {
+		"color": "#666666",
+		"selectedColor": "#D2691E",
+		"borderStyle": "white",
+		"backgroundColor": "#FFFFFF",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tabbar/可颂.png",
+				"selectedIconPath": "static/tabbar/可颂.png"
+			},
+			{
+				"pagePath": "pages/category/category",
+				"text": "分类",
+				"iconPath": "static/tabbar/甜品.png",
+				"selectedIconPath": "static/tabbar/甜品.png"
+			},
+			{
+				"pagePath": "pages/checkout/checkout",
+				"text": "购物车",
+				"iconPath": "static/tabbar/甜甜圈.png",
+				"selectedIconPath": "static/tabbar/甜甜圈.png"
+			},
+			{
+				"pagePath": "pages/member/member",
+				"text": "会员",
+				"iconPath": "static/tabbar/慕斯蛋糕.png",
+				"selectedIconPath": "static/tabbar/慕斯蛋糕.png"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}
