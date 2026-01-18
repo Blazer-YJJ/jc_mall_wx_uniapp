@@ -2,7 +2,7 @@
  * @Author: BlazerYJJ yangjijuna@gmail.com
  * @Date: 2026-01-13 16:00:51
  * @LastEditors: BlazerYJJ yangjijuna@gmail.com
- * @LastEditTime: 2026-01-13 16:11:27
+ * @LastEditTime: 2026-01-18 15:19:04
  * @FilePath: \jc_mall_wx_uni\pages\category\category.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -99,14 +99,23 @@ export default {
 					const resp = res.data
 					if (resp && resp.code === 200) {
 						// 规范化分类图片地址（若后端返回相对路径）
-						this.categories = (resp.data || []).map((cat) => {
+						const categoryList = (resp.data || []).map((cat) => {
 							return Object.assign({}, cat, { image: this.getImageUrl(cat.image) })
 						})
-						// 默认选中第一个分类并加载商品
-						if (this.categories.length > 0) {
-							this.selectedCategoryId = this.categories[0].id
-							this.resetAndFetchProducts()
-						}
+
+						// 在分类列表开头添加"全部"选项
+						this.categories = [
+							{
+								id: 'all',
+								name: '全部',
+								image: ''
+							},
+							...categoryList
+						]
+
+						// 默认选中"全部"分类并加载商品
+						this.selectedCategoryId = 'all'
+						this.resetAndFetchProducts()
 					} else {
 						uni.showToast({ title: (resp && resp.message) || '分类获取失败', icon: 'none' })
 					}
@@ -139,7 +148,8 @@ export default {
 				page: this.page,
 				pageSize: this.pageSize
 			}
-			if (this.selectedCategoryId) {
+			// 只有当选中具体分类时才传递categoryId参数，"全部"时不传参数获取所有商品
+			if (this.selectedCategoryId && this.selectedCategoryId !== 'all') {
 				params.categoryId = this.selectedCategoryId
 			}
 

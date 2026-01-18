@@ -2,7 +2,7 @@
  * @Author: BlazerYJJ yangjijuna@gmail.com
  * @Date: 2026-01-15 10:00:00
  * @LastEditors: BlazerYJJ yangjijuna@gmail.com
- * @LastEditTime: 2026-01-16 05:13:52
+ * @LastEditTime: 2026-01-18 03:41:51
  * @FilePath: \jc_mall_wx_uni\components\member\MemberCard.vue
  * @Description: 会员卡片模块 - 登录状态管理和会员信息展示
 -->
@@ -183,13 +183,117 @@ export default {
     },
 
     // 微信一键登录
-    handleWechatLogin() {
-      uni.showToast({
-        title: '微信登录功能开发中',
-        icon: 'none'
+    async handleWechatLogin() {
+      if (this.isLogging) return
+
+      this.isLogging = true
+      try {
+        // 显示加载提示
+        uni.showLoading({
+          title: '正在登录...'
+        })
+
+        // 第一步：调用微信登录获取授权码
+        const loginResult = await this.wechatLogin()
+
+        // 第二步：调用后端API进行登录/注册
+        const response = await this.requestWechatLogin(loginResult.code)
+
+        // 第三步：处理登录成功
+        await this.handleWechatLoginSuccess(response)
+
+      } catch (error) {
+        console.error('微信登录失败', error)
+        this.handleWechatLoginError(error)
+      } finally {
+        this.isLogging = false
+        uni.hideLoading()
+      }
+    },
+
+    // 微信小程序登录获取授权码
+    wechatLogin() {
+      return new Promise((resolve, reject) => {
+        uni.login({
+          provider: 'weixin',
+          success: (res) => {
+            if (res.code) {
+              resolve(res)
+            } else {
+              reject(new Error('获取微信授权码失败'))
+            }
+          },
+          fail: (error) => {
+            reject(new Error('微信登录调用失败：' + error.errMsg))
+          }
+        })
       })
-      // 这里可以实现微信登录逻辑
-      // uni.login() 等微信登录API
+    },
+
+    // 调用后端微信登录API
+    async requestWechatLogin(code) {
+      const url = `${BASE_URL}/api/account/member/wechat-login`
+      return await this.request({
+        url,
+        method: 'POST',
+        data: {
+          code: code
+        }
+      })
+    },
+
+    // 处理微信登录成功
+    async handleWechatLoginSuccess(response) {
+      if (response.code === 200) {
+        // 登录成功
+        this.isLoggedIn = true
+        this.memberInfo = response.data.member
+
+        // 保存登录信息到本地存储
+        uni.setStorageSync('member_token', response.data.token)
+        uni.setStorageSync('member_info', response.data.member)
+
+        // 显示成功提示
+        const isNewUser = response.data.isNewUser
+        const successMsg = isNewUser ? '注册并登录成功' : '登录成功'
+
+        uni.showToast({
+          title: successMsg,
+          icon: 'success',
+          duration: 2000
+        })
+
+        // 通知父组件或全局状态更新
+        this.$emit('login-success', response.data)
+      } else {
+        throw new Error(response.message || '登录失败')
+      }
+    },
+
+    // 处理微信登录错误
+    handleWechatLoginError(error) {
+      let errorMsg = '登录失败'
+
+      if (error.message) {
+        errorMsg = error.message
+      } else if (error.errMsg) {
+        errorMsg = error.errMsg
+      }
+
+      // 根据不同错误类型显示相应提示
+      if (errorMsg.includes('授权码')) {
+        errorMsg = '获取微信授权失败，请重试'
+      } else if (errorMsg.includes('网络')) {
+        errorMsg = '网络连接失败，请检查网络后重试'
+      } else if (errorMsg.includes('拒绝')) {
+        errorMsg = '您拒绝了微信授权'
+      }
+
+      uni.showToast({
+        title: errorMsg,
+        icon: 'none',
+        duration: 3000
+      })
     },
 
     // 退出登录

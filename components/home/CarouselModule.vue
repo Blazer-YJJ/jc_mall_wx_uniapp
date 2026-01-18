@@ -2,9 +2,9 @@
   <view class="carousel-module">
     <swiper class="carousel-swiper" indicator-dots :autoplay="true" interval="4000" duration="600" circular>
       <swiper-item v-for="(b, idx) in banners" :key="b.id || idx" @click="onBannerClick(b)">
-        <image :src="b.image" class="carousel-image" mode="aspectFill" @error="onImageError($event, idx)" />
+        <image :src="b.image" class="carousel-image" mode="widthFix" @error="onImageError($event, idx)" />
       </swiper-item>
-      <view v-if="!banners.length" class="carousel-placeholder">轮播占位</view>
+      <view v-if="!banners.length" class="carousel-placeholder">轮播图加载中...</view>
     </swiper>
   </view>
 </template>
